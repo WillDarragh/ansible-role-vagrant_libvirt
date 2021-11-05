@@ -1,0 +1,7 @@
+---
+- name: Converge
+  hosts: all
+  tasks:
+    - name: "Include willdarragh.vagrant_libvirt"
+      include_role:
+        name: "willdarragh.vagrant_libvirt"

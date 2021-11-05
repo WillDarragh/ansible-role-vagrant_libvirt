@@ -1,0 +1,8 @@
+---
+- name: Side effect
+  hosts: all
+  gather_facts: false
+  tasks:
+    - name: No side effect
+      assert:
+        that: true

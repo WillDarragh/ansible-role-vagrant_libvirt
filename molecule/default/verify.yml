@@ -1,0 +1,19 @@
+---
+# This is an example playbook to execute Ansible tests.
+
+- name: Verify
+  hosts: all
+  gather_facts: false
+  tasks:
+  - name: Check that vagrant is installed
+    command: vagrant --version
+    changed_when: false
+
+  - name: Check vagrant plugins
+    command: vagrant plugin list
+    register: vagrant_plugin_list
+    changed_when: false
+
+  - name: Check that the libvirt plugin is installed
+    assert:
+      that: "'vagrant-libvirt' in vagrant_plugin_list.stdout"

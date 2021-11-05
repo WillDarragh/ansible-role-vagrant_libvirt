@@ -1,0 +1,50 @@
+---
+# tasks file for vagrant_libvirt
+- name: Add debian source to /etc/apt/sources.list
+  lineinfile:
+    dest: "/etc/apt/sources.list"
+    line: "deb-src http://deb.debian.org/debian bullseye main"
+
+- name: Update apt
+  apt:
+    update_cache: true
+
+- name: Install virt-manager
+  apt:
+    state: present
+    name:
+      - virt-manager
+
+- name: Install vagrant-libvirt dependencies # https://github.com/vagrant-libvirt/vagrant-libvirt
+  block:
+    - name: Apt build dependencies for vagrant and rub-libvirt
+      # The vagrant-libvirt scripts call for build-dep, but I went for present to simplify things
+      apt:
+        state: build-dep
+        name:
+          - vagrant
+          - ruby-libvirt
+    - name: Apt install dependencies
+      apt:
+        state: present
+        name:
+          - qemu
+          - libvirt-daemon-system
+          - libvirt-clients
+          - ebtables
+          - dnsmasq-base
+          - libxslt-dev
+          - libxml2-dev
+          - libvirt-dev
+          - zlib1g-dev
+          - ruby-dev
+          - libguestfs-tools
+
+- name: Check if the vagrant-libvirt plugin is already installed
+  command: vagrant plugin list
+  register: vagrant_plugin_list
+  changed_when: false
+
+- name: Install the vagrant-libvirt plugin
+  command: vagrant plugin install vagrant-libvirt
+  when: "'vagrant-libvirt' not in vagrant_plugin_list.stdout"
